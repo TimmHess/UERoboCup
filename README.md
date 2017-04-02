@@ -10,9 +10,9 @@ After the installation is complete, log into the UELauncher and use it to downlo
 Making use of the PBR(physics based rendering) capabilies of UE4 we incorporated Materials provided by __Allegorithmic__ ([https://share.allegorithmic.com/](https://share.allegorithmic.com/)). To be able to use these Materials you will need to add the __Substance Plugin__ to UnrealEngine, which is available __for free__ in the UELaunchers __Marketplace__. <br/>
 After downloading the plugin from the marketplace do not forget to add it to the Engines installation you are using: 
 
-![](./Images/DownloadSubstance.png)
+![](./md_common/Images/DownloadSubstance.png)
 
-![](./Images/InstallSubstance_marked.png)
+![](./md_common/Images/InstallSubstance_marked.png)
 
 
 #### __C++ Support:__
@@ -20,7 +20,7 @@ If you want to add or edit C++ modules to the Training Set Generator you will ad
 To do so, use the UELauncher to start the engine and go to the __New Project__ tab. Select __C++ Project__.  <br/>
 At the bottom of the UELauncher there should appear a message pointing towards a missing compiler and additionally a installation link to the respective VisualStudio version needet.
 
-![](./Images/VisualStudioInstall_marked.png) 
+![](./md_common/Images/VisualStudioInstall_marked.png) 
 
 After completing all the above steps the installation of UnrealEngine4 is complete and you can go ahead an load the __TrainingSetGenerator__.uproject. *The first time UnrealEngine4 may need some time setting up and recompiling components for your system*
 
@@ -34,7 +34,7 @@ After completing all the above steps the installation of UnrealEngine4 is comple
 Open the __TrainingSetGenerator.uproject__ file. <br/>
 You will see the __UEEditor__ similar to this: 
 
-![](./Images/TrainingSetGenerator_StartUpScreen.png)
+![](./md_common/Images/TrainingSetGenerator_StartUpScreen.png)
 
 Move to the __Play__ button and select the __New Editor Window__ option. <br/>
 *In the current version this play option is needed to ensure correct aspect ratios on the rendered images*. 
@@ -52,9 +52,9 @@ __Location of semantically annotated ground truth:__ <br/> ``` \TrainingSetGener
 Currently all variables needed to adjust the generation pipeline behavior are found in the __LevelBlueprint__. <br/>
 You can access the LevelBlueprint by:
 
-![](./Images/selectLevelBlueprint.png)
+![](./md_common/Images/selectLevelBlueprint.png)
 
-![](./Images/LevelBlueprintOverview.png)
+![](./md_common/Images/LevelBlueprintOverview.png)
 
 The BlueprintEditor effectively splits into three parts: The Blueprint graph (middle), the function and global variable overview (left), and a details panel (right). 
 
