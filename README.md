@@ -30,6 +30,10 @@ After completing all the above steps the installation of UnrealEngine4 is comple
 ## <span style="color:#5555FF"> __GETTING STARTED: A Quick Guide__</span>
 *This section will give an overview of how to use use/manuipulate the TrainingSetGenerator project, but should by not be seen as a tutorial on how to operate UnrealEngine4 (/UEEditor). For in depth information please see the [UnrealEngine Documentation](https://docs.unrealengine.com/latest/INT/) or one of many third party tutorials (e.g. Youtube).* 
 
+#### __Git Clone:__
+
+``` git clone https://github.com/TimmHess/UERoboCup.git ```
+
 #### __Generating The First Synthetic Set:__ 
 Open the __TrainingSetGenerator.uproject__ file. <br/>
 You will see the __UEEditor__ similar to this: 
