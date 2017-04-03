@@ -10,9 +10,9 @@ After the installation is complete, log into the UELauncher and use it to downlo
 Making use of the PBR(physics based rendering) capabilies of UE4 we incorporated Materials provided by __Allegorithmic__ ([https://share.allegorithmic.com/](https://share.allegorithmic.com/)). To be able to use these Materials you will need to add the __Substance Plugin__ to UnrealEngine, which is available __for free__ in the UELaunchers __Marketplace__. <br/>
 After downloading the plugin from the marketplace do not forget to add it to the Engines installation you are using: 
 
-![](./md_common/Images/DownloadSubstance.png)
+![](./md_common/Images/DownloadSubstancePlugin.png)
 
-![](./md_common/Images/InstallSubstance_marked.png)
+![](./md_common/Images/InstallSubstancePlugin.png)
 
 
 #### __C++ Support:__
