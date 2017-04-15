@@ -5,6 +5,7 @@
 [Getting Started: A Quick Guide](#gettingstarted)<br/>
 [Variables: Overview](#variables)<br/>
 [DataSet: Extraction](#python)<br/>
+[TestSet](#testSet)</br>
 
 
 <a name="install"></a>
@@ -134,3 +135,10 @@ If you want to use the ``` --saveAs=LMDB ``` database structure you will additio
 
 #### __Check:__ </br>
 To view the LMDB database content you can use the ``` testLMDB.py ``` Python script provided in the ```UERoboCup/python/``` directory.
+
+<a name="testSet"></a>
+## [<span style="color:#5555FF"> __TESTSET: RealData__](#install)</span>
+To be able to compare your neural network architectures, trained on the generated synthetic examples, we provide the test-data set used for all of our experiments and benchmarks. </br> 
+The set consists 4 x 780 (32x32 pixel) images showing the object classes: Ball, Robot, Goalpost, and Field (background). 
+
+__The data has been accumulate with help from [__Nao-Team HTWK__](http://robocup.imn.htwk-leipzig.de/pages/robocup.php?lang=de), [__HULKs__](http://www.hulks.de/), and [__SPQR Team__](http://spqr.diag.uniroma1.it/), who generously supported us with their data! Thank you very much!__
