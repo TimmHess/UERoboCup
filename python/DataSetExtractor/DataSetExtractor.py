@@ -1,14 +1,25 @@
+from optparse import OptionParser
 import os
 import re
 import sys
-import numpy as np
-import cv2
 import time
 import random
 import math
-import caffe
-import lmdb
 import time
+
+try: 
+    import numpy as np
+except:
+    print("No numpy installation found..");
+    sys.exit();
+
+try:
+    import cv2
+except:
+    print("No OpenCv(cv2) installation found..");
+    sys.exit();
+
+
 
 #####
 #for ctrl-c close
@@ -44,7 +55,6 @@ class DataSetExtractor():
 
         self.labelDict = self.__loadLabelConfig();
         self.legendDict = self.__readLegendFile();
-        print(self.legendDict);
 
         self.imageArray = None;
         self.labelArray = None;
@@ -53,7 +63,7 @@ class DataSetExtractor():
     #################################################
     #PUBLIC:
     #################################################
-    def extractDataSet(self, isPatchNumberEvening=False, maxPatchNumPerClass=[1,1,1,2]):
+    def extractDataSet(self, isPatchNumberEvening=False, maxPatchNumPerClass=[1,1,1,2], rgbFormat=False):
         """
         Extracts dataset using all images and masks available in the given directory.
         Use the "useOnePatchPerClass" variable if needed to even out the data sets per class
@@ -78,12 +88,15 @@ class DataSetExtractor():
         if(isPatchNumberEvening):
             allPatchArray, allLabelArray = self.__evenPatchNumbers(allPatchArray, allLabelArray);
 
-        #prepare image crops for LMDB
-        allPatchArray, allLabelArray = self.__transformImagesForTraining(allPatchArray, allLabelArray);
+        if(not rgbFormat):
+            #prepare image crops for LMDB
+            allPatchArray, allLabelArray = self.__transformImagesForTraining(allPatchArray, allLabelArray);
 
-        #rewrite arrays as numpy arrays
-        allPatchArray = np.asarray(allPatchArray, dtype="uint8");
-        allLabelArray = np.asarray(allLabelArray, dtype="int64");
+            #rewrite arrays as numpy arrays
+            allPatchArray = np.asarray(allPatchArray, dtype="uint8");
+            allLabelArray = np.asarray(allLabelArray, dtype="int64");
+        else:
+            allPatchArray, allLabelArray = self.__resizeImages(allPatchArray, allLabelArray);
 
         return allPatchArray, allLabelArray;
 
@@ -142,9 +155,35 @@ class DataSetExtractor():
                 txn.put(str_id, currDatum.SerializeToString());
 
 
+    def saveToDirStructure(self, imageArray, labelArray):
+        """
+        Saves given imageArray(uint8) and labelArray(int64)
+        to a sub-directory structure
+        """
+        dirNameDict = {0:"/background", 1:"/ball", 2:"/robot", 3:"/goalpost"};
+
+        #create subdirs based on dirNameDict
+        self.__createSubDirs(dirNameDict);
+
+        #save image patches to sub-dir structure
+        for i in range(len(imageArray)):
+            currImagePath = self.dbTargetPath+dirNameDict[labelArray[i]]+"/img"+str(i)+".png";
+            cv2.imwrite(currImagePath, imageArray[i]);
+
+        return;
+
+
     #################################################
     #Private
     #################################################
+    def __resizeImages(self, imageArray, labelArray):
+        resizedImageArray = [];
+        for img in imageArray:
+            img = cv2.resize(img, (self.patchSize,self.patchSize));
+            resizedImageArray.append(img);
+
+        return resizedImageArray, labelArray;
+    
     def __transformImagesForTraining(self, imageArray, labelArray):
         """
         Warps image crops to match the given network input and change image
@@ -182,7 +221,8 @@ class DataSetExtractor():
         for i in range(lenImageArray):
             if(label == labelArray[i]):
                 currImage = imageArray[i];
-                imageArray.append(cv2.flip(currImage, 1));#vflip
+                flipImage = cv2.flip(currImage, 1);
+                imageArray.append(flipImage);#vflip
                 labelArray.append(label);
 
 
@@ -229,7 +269,7 @@ class DataSetExtractor():
 
         for i in range(numberOfPatches):
             currRandomIndex = int(np.floor(np.random.uniform(0,lenImageArray)));
-            newImageArray.append(imageArray[currRandomIndex]);
+            newImageArray.append(imageArray.pop(currRandomIndex));
             newLabelArray.append(label);
             lenImageArray -= 1;
 
@@ -286,7 +326,6 @@ class DataSetExtractor():
                     continue;
 
                 currLegendIndex += int(i[0]);
-                print("currLegendIndex: " + str(currLegendIndex));
                 legendDict[str(currLegendIndex)] = i[1]
         return legendDict;
 
@@ -490,6 +529,18 @@ class DataSetExtractor():
         return currPatch, label;
 
 
+    def __createSubDirs(self, dirNameDict):
+        #create root dir
+        if(not os.path.exists(self.dbTargetPath)):
+            os.makedirs(self.dbTargetPath);
+
+        #create all dirs corresponding to tags
+        for key in dirNameDict:
+            os.makedirs(self.dbTargetPath + dirNameDict[key]);
+
+        return;
+
+
     def __randomCropBoundingBox(self, startXpos, startYpos, endXpos, endYpos):
         """
         Cuts a random crop from inside a given bounding box bounds.
@@ -536,27 +587,55 @@ class DataSetExtractor():
 if(__name__ == "__main__"):
     argv = sys.argv;
 
-    if(len(argv) <= 1):
-        print("No image data given...");
-        sys.exit();
-    elif(len(argv) <= 2):
-        print("No ground truth data given...");
-        sys.exit();
-    elif(len(argv) <= 3):
-        print("No patch size for images given...");
-        sys.exit();
-    elif(len(argv) <= 4):
-        print("No target path for db given...");
-        sys.exit();
+    parser = OptionParser();
+    parser.add_option("-i", "--imgData", action="store", type="string", dest="pathToImages");
+    parser.add_option("-g", "--groundTruth", action="store", type="string", dest="pathToGroundTruth");
+    parser.add_option("-p", "--patchSize", action="store", type="int", dest="patchSize", default=32);
+    parser.add_option("-s", "--saveTo", action="store", type="string", dest="pathToDB", default="./DB");
+    parser.add_option("--saveAs", action="store", type="string", dest="saveAs", default="LMDB");
+    (options, args) = parser.parse_args(sys.argv);
 
-    DATA_SET_SOURCE = argv[1];
-    GT_SOURCE = argv[2]
-    PATCH_SIZE = int(argv[3]);
-    TARGET_DB = argv[4];
+    DATA_SET_SOURCE = options.pathToImages;
+    GT_SOURCE = options.pathToGroundTruth
+    PATCH_SIZE = options.patchSize;
+    TARGET_DB = options.pathToDB;
+    SAVE_AS = options.saveAs;
 
+    print("");
+    if(DATA_SET_SOURCE != None):
+        print("Loading images from: "  + DATA_SET_SOURCE);
+    else:
+        print("No path to images given...");
+        print("use -h for help");
+        sys.exit(0);
+    if(GT_SOURCE != None):
+        print("Loading ground truth from: " + GT_SOURCE);
+    else:
+        print("No path to ground truth data given...");
+        print("use -h for help");
+    print("Using patch size: " + str(PATCH_SIZE) + "*" + str(PATCH_SIZE));
+    print("Saving data set to: " + TARGET_DB);
+    print("Saving data as: " + SAVE_AS);
+    print("");
+
+    time.sleep(2);
 
     dataSetExtractor = DataSetExtractor(DATA_SET_SOURCE, GT_SOURCE, PATCH_SIZE, TARGET_DB);
-    imageArray, labelArray = dataSetExtractor.extractDataSet(isPatchNumberEvening=True);
-    
-    #save extracted images to dataformat(in this case LMDB):
-    dataSetExtractor.saveToLMDB(imageArray, labelArray);
+    if(SAVE_AS == "LMDB"):
+        try:
+            import caffe
+        except:
+            print("No caffe(pyCaffe) installation found..");
+            sys.exit();
+
+        try:
+            import lmdb
+        except:
+            print("No LMDB installation found..");
+            sys.exit();
+
+        imageArray, labelArray = dataSetExtractor.extractDataSet(isPatchNumberEvening=True, rgbFormat=False);
+        dataSetExtractor.saveToLMDB(imageArray, labelArray);
+    elif(SAVE_AS == "DIR"):
+        imageArray, labelArray = dataSetExtractor.extractDataSet(isPatchNumberEvening=True, rgbFormat=True);
+        dataSetExtractor.saveToDirStructure(imageArray, labelArray);
