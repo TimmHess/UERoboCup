@@ -1,6 +1,15 @@
 # <span style="color:#0000FF">__UERoboCup__ </span>
 
-## <span style="color:#5555FF"> __INSTALL: Preparing Unreal Engine 4__ (Windows)</span>
+## Overview:
+[Install: Preparing Unreal Engine 4](#install)<br/>
+[Getting Started: A Quick Guide](#gettingstarted)<br/>
+[Variables: Overview](#variables)<br/>
+[DataSet: Extraction](#python)<br/>
+[TestSet](#testSet)</br>
+
+
+<a name="install"></a>
+## [<span style="color:#5555FF"> __INSTALL: Preparing Unreal Engine 4__ (Windows)](#install)</span>
 #### __Engine Basis Installation:__
 Go to the [https://www.unrealengine.com/](https://www.unrealengine.com/) website and create your EpicGames account, download the "EpicGamesLauncher" (UELauncher) and install it. <br/>
 After the installation is complete, log into the UELauncher and use it to download Unreal Engine 4 Version __4.14.3__. 
@@ -26,6 +35,7 @@ After completing all the above steps the installation of UnrealEngine4 is comple
 
 
 <br/>
+<a name="gettingstarted"></a>
 
 ## <span style="color:#5555FF"> __GETTING STARTED: A Quick Guide__</span>
 *This section will give an overview of how to use use/manuipulate the TrainingSetGenerator project, but should by not be seen as a tutorial on how to operate UnrealEngine4 (/UEEditor). For in depth information please see the [UnrealEngine Documentation](https://docs.unrealengine.com/latest/INT/) or one of many third party tutorials (e.g. Youtube).* 
@@ -64,7 +74,7 @@ The BlueprintEditor effectively splits into three parts: The Blueprint graph (mi
 
 To change the value of a variable simply select it and adjust its __Default Value__ in the details panel.
 
-
+<a name="variables"></a>
 ## <span style="color:#5555FF"> __VARIABLES: Overview__</span>
 *The __public__ variables (marked by the "open eye" symbol) control the main features of the generation pipeline, such as number of synthetic data to be created per execution or standard deviation of the intenstiy of the light sources. <br/> 
 The __private__ variables (marked by the "closed eye" symbol) contain bounds, counters, and object-array placeholders and should thus not be altered.*
@@ -103,3 +113,32 @@ Gives minimum and maximum value for camera exposure sampling.
 
 #### __Private__:
 *Coming soon...*
+
+<a name="python"></a>
+## [<span style="color:#5555FF"> __DATASET: Extraction__](#install)</span>
+The ```DataSetExtraction.py``` Python(__V.: 2.7.+__) script makes use of the previously generated image and ground truth data, merging them into an annotated training(or test) set composed of image patches containing examples for the given classes and respective labels. For now only LMDB and "plain data"(images structured in sub-directories) saves are supported.
+
+The script is found in the ``` UERoboCup/python/DataSetExtractor/ ``` directory.  
+
+``` python DataSetExtractor.py --imgData=<PathToImageData> --groundTruth=<PathToGroundTruthData> --patchSize=<PatchSize> --saveTo=<PathToDatabase> --saveAs=<DatabaseType> ```
+
+#### __Dependencies:__ </br>
+To run the script ``` Numpy ``` and ``` OpenCV ``` (cv2) are required. 
+
+If you want to use the ``` --saveAs=LMDB ``` database structure you will additionally need the ``` caffe ```(pycaffe) and ``` lmdb ``` python package.
+
+#### __Examples:__ </br>
+``` python DataSetExtractor.py --imgData=./Screenshots/ --groundTruth=./ScreenshotMasks/ --patchSize=32 --saveTo=./TrainingSets/TestDB1/ --saveAs=LMDB ```
+
+``` python DataSetExtractor.py --imgData=./Screenshots/ --groundTruth=./ScreenshotMasks/ --patchSize=24 --saveTo=./TrainingSets/TestDB2/ --saveAs=DIR ```
+
+
+#### __Check:__ </br>
+To view the LMDB database content you can use the ``` testLMDB.py ``` Python script provided in the ```UERoboCup/python/``` directory.
+
+<a name="testSet"></a>
+## [<span style="color:#5555FF"> __TESTSET: RealData__](#install)</span>
+To be able to compare your neural network architectures, trained on the generated synthetic examples, we provide the test-data set used for all of our experiments and benchmarks. </br> 
+The set consists 4 x 780 (32x32 pixel) images showing the object classes: Ball, Robot, Goalpost, and Field (background). 
+
+__The data has been accumulate with help from [__Nao-Team HTWK__](http://robocup.imn.htwk-leipzig.de/pages/robocup.php?lang=de), [__HULKs__](http://www.hulks.de/), and [__SPQR Team__](http://spqr.diag.uniroma1.it/), who generously supported us with their data! Thank you very much!__
