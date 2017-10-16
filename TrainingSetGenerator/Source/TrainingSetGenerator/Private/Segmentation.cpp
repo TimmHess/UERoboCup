@@ -21,10 +21,9 @@ bool USegmentation::FileIO__SaveStringTextToFile(
 	bool AllowOverWriting) {
 	
 	FString currGameDir = FPaths::GameDir();
-	FString screenshotExtenstion = "Saved/ScreenshotMasks"; //path from GameDir to saving dir for gorund truth semantic annotation masks
-
+	
 	if (useStandardMaskSaveDir) {
-		SaveDirectory = currGameDir + screenshotExtenstion;
+		SaveDirectory = currGameDir + SaveDirectory;
 		//UE_LOG(LogTemp, Warning, TEXT("currGameDir: %s"), *SaveDirectory);
 	}
 
