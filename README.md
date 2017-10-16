@@ -1,6 +1,17 @@
 # <span style="color:#0000FF">__UERoboCup__ </span>
 
 ## Overview:
+
+### __Corresponding Publication:__
+This repository provides code for stochastic scene generation of RoboCup SPL scenes in Unreal Engine 4 that has been used in our corresponding paper published at the RoboCup Symposium 2017:
+
+https://www.robocup2017.org/file/symposium/RoboCup_Symposium_2017_paper_15.pdf
+
+If you use this repository, please cite the paper:
+
+<b> T. Hess, M. Mundt, T. Weis and V. Ramesh: "Large-scale Stochastic Scene Generation and Semantic Annotation for Deep Convolutional, Neural Network Training in the RoboCup SPL", In: RoboCup 2017: Robot World Cup XXI, LNAI. Springer (2017)
+
+### __Table of Contents:__ 
 [Install: Preparing Unreal Engine 4](#install)<br/>
 [Getting Started: A Quick Guide](#gettingstarted)<br/>
 [Variables: Overview](#variables)<br/>
